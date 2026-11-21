@@ -8,7 +8,7 @@ OpenWilo scans nearby Wi-Fi access points and shows where their channels overlap
 
 ## Screenshots
 
-Example views from a fictional scan with 29 access points, including 14 on 2.4 GHz.
+Example views from a fictional scan with 29 access points, including 14 on 2.4 GHz. These screenshots show the Simplified Chinese edition.
 
 ![Tri-band channel charts and access point details](docs/screenshots/channels.png)
 
@@ -26,9 +26,11 @@ Example views from a fictional scan with 29 access points, including 14 on 2.4 G
 
 ## Download and use
 
-Choose the Apple silicon (arm64) or Intel (amd64 / x86_64) ZIP from [GitHub Releases](https://github.com/miaostudio2324/OpenWilo/releases/latest). Both builds require **macOS 14 or later**. Extract it and open `OpenWilo.app`. The distributed build is ad hoc signed and has no Apple notarization.
+Choose an English (`en`) or Simplified Chinese (`zh-CN`) ZIP for Apple silicon (`arm64`) or Intel (`amd64` / `x86_64`). Both editions require **macOS 14 or later**. Extract the ZIP and open `OpenWilo.app`. The release builds are ad hoc signed and have no Apple notarization. [GitHub Releases](https://github.com/miaostudio2324/OpenWilo/releases/latest)
 
-Click **定位授权** (Location Permission) to let macOS reveal network names and BSSIDs. A successful authorization starts scanning automatically. Click **扫描** (Scan) to start, or **停止扫描** (Stop Scan) to stop. The 1.0.0 application interface is in Simplified Chinese.
+Each edition displays its own app interface language regardless of your macOS language. macOS-provided controls may use the system language.
+
+Click **Location Access** to let macOS reveal network names and BSSIDs. A successful authorization starts scanning automatically. Click **Scan** to start or **Stop Scan** to stop.
 
 6 GHz results depend on your Mac’s wireless hardware and the data returned by macOS. A dashed curve indicates an estimated channel center. The transmit link rate describes the local Wi-Fi link.
 
@@ -45,10 +47,10 @@ swift test
 ./scripts/build-app.sh
 ```
 
-The script builds `dist/OpenWilo.app` for the host architecture. To cross-compile the Intel build on macOS, run:
+The script builds the Simplified Chinese edition at `dist/OpenWilo.app` for the host architecture. To cross-compile the English edition for Intel on macOS, run:
 
 ```sh
-./scripts/build-app.sh release "$PWD/dist/intel/OpenWilo.app" x86_64
+./scripts/build-app.sh release "$PWD/dist/en-intel/OpenWilo.app" x86_64 en
 ```
 
 OpenWilo uses SwiftUI, Swift Charts, and CoreWLAN, with no third-party package dependencies.

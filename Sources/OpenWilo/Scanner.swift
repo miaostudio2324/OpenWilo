@@ -122,8 +122,8 @@ enum ScanError: LocalizedError {
 
     var errorDescription: String? {
         switch self {
-        case .noInterface: return "没有找到可用的 Wi-Fi 接口。"
-        case .off: return "Wi-Fi 已关闭。启用 Wi-Fi 后重试。"
+        case .noInterface: return L10n.text("没有找到可用的 Wi-Fi 接口。")
+        case .off: return L10n.text("Wi-Fi 已关闭。启用 Wi-Fi 后重试。")
         }
     }
 }

@@ -9,6 +9,8 @@ final class Workspace: NSObject, ObservableObject, CLLocationManagerDelegate {
     enum Source: String {
         case live = "本机扫描"
         case file = "离线会话"
+
+        var title: String { L10n.text(rawValue) }
     }
 
     @Published private(set) var source: Source = .live
@@ -97,7 +99,7 @@ final class Workspace: NSObject, ObservableObject, CLLocationManagerDelegate {
             startScanning()
         } else if prompted {
             scanAfterAuthorization = false
-            message = "可在系统设置的定位服务中为 OpenWilo 授权。"
+            message = L10n.text("可在系统设置的定位服务中为 OpenWilo 授权。")
         }
     }
 
@@ -130,10 +132,10 @@ final class Workspace: NSObject, ObservableObject, CLLocationManagerDelegate {
             setNetworks(updated)
             selected.formIntersection(updated.map(\.id))
             if !updated.isEmpty && updated.allSatisfy({ $0.bssid == nil }) {
-                message = "macOS 未提供 BSSID。请检查定位授权后重新扫描。"
+                message = L10n.text("macOS 未提供 BSSID。请检查定位授权后重新扫描。")
             } else if updated.isEmpty &&
                 location.authorizationStatus != .authorizedAlways {
-                message = "没有返回网络。定位授权可能影响扫描结果。"
+                message = L10n.text("没有返回网络。定位授权可能影响扫描结果。")
             } else {
                 message = nil
             }
@@ -141,7 +143,7 @@ final class Workspace: NSObject, ObservableObject, CLLocationManagerDelegate {
         } catch {
             guard !Task.isCancelled else { return false }
             connection = nil
-            message = "扫描失败。\(error.localizedDescription)"
+            message = L10n.format("扫描失败。%@", error.localizedDescription)
             return false
         }
     }
@@ -170,17 +172,17 @@ final class Workspace: NSObject, ObservableObject, CLLocationManagerDelegate {
             setNetworks(session.networks)
             lastScan = session.date
         } catch {
-            message = "打开失败。\(error.localizedDescription)"
+            message = L10n.format("打开失败。%@", error.localizedDescription)
         }
     }
 
     func saveSession() {
         let snapshot = ScanSession(date: lastScan ?? .now, source: source.rawValue, networks: networks)
-        save("OpenWilo-会话.json", type: .json) { try snapshot.encoded() }
+        save(L10n.text("OpenWilo-会话.json"), type: .json) { try snapshot.encoded() }
     }
 
     func exportCSV(_ rows: [Network]) {
-        save("OpenWilo-网络.csv", type: .commaSeparatedText) { ScanSession.csv(rows) }
+        save(L10n.text("OpenWilo-网络.csv"), type: .commaSeparatedText) { ScanSession.csv(rows) }
     }
 
     private func save(_ filename: String, type: UTType, data: () throws -> Data) {
@@ -191,7 +193,7 @@ final class Workspace: NSObject, ObservableObject, CLLocationManagerDelegate {
         do {
             try data().write(to: url, options: .atomic)
         } catch {
-            message = "保存失败。\(error.localizedDescription)"
+            message = L10n.format("保存失败。%@", error.localizedDescription)
         }
     }
 

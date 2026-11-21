@@ -24,7 +24,7 @@ struct Dashboard: View {
         let query = search.trimmingCharacters(in: .whitespacesAndNewlines)
         return workspace.networks.filter { network in
             (workspace.band == nil || network.band == workspace.band) &&
-            (query.isEmpty || [network.name, network.bssid ?? "", network.note, network.phy]
+            (query.isEmpty || [network.name, network.bssid ?? "", network.note, L10n.networkValue(network.phy)]
                 .contains { $0.localizedCaseInsensitiveContains(query) }) &&
             (security.isEmpty || network.security == security) &&
             (primaryChannel.isEmpty || network.channel.map(String.init) == primaryChannel) &&
@@ -91,24 +91,24 @@ struct Dashboard: View {
             .accessibilityElement(children: .combine)
 
             Spacer()
-            TextField("搜索 SSID、BSSID 或备注", text: $search)
+            TextField(L10n.text("搜索 SSID、BSSID 或备注"), text: $search)
                 .textFieldStyle(.roundedBorder)
                 .frame(width: 225)
                 .accessibilityIdentifier("networkSearch")
 
             Menu {
-                Button("打开会话…", action: workspace.openSession)
+                Button(L10n.text("打开会话…"), action: workspace.openSession)
                     .disabled(workspace.busy || workspace.continuous)
-                Button("保存会话…", action: workspace.saveSession)
+                Button(L10n.text("保存会话…"), action: workspace.saveSession)
                     .disabled(workspace.networks.isEmpty)
-                Button("导出当前列表为 CSV…") { workspace.exportCSV(rows) }
+                Button(L10n.text("导出当前列表为 CSV…")) { workspace.exportCSV(rows) }
                     .disabled(rows.isEmpty)
-                Button("导出所选网络为 CSV…") {
+                Button(L10n.text("导出所选网络为 CSV…")) {
                     workspace.exportCSV(rows.filter { workspace.selected.contains($0.id) })
                 }
                 .disabled(!rows.contains { workspace.selected.contains($0.id) })
             } label: {
-                Label("文件", systemImage: "square.and.arrow.up")
+                Label(L10n.text("文件"), systemImage: "square.and.arrow.up")
             }
             .menuStyle(.borderlessButton)
             .fixedSize()
@@ -117,7 +117,7 @@ struct Dashboard: View {
                 if workspace.continuous { workspace.stop() }
                 else { workspace.startScanning() }
             } label: {
-                Label(workspace.continuous ? "停止扫描" : "扫描",
+                Label(workspace.continuous ? L10n.text("停止扫描") : L10n.text("扫描"),
                       systemImage: workspace.continuous ? "stop.fill" : "wifi")
                     .frame(minWidth: 74)
             }
@@ -131,8 +131,8 @@ struct Dashboard: View {
             } label: {
                 Image(systemName: "sidebar.right").padding(.horizontal, 2)
             }
-            .help(showInspector ? "隐藏网络详情" : "显示网络详情")
-            .accessibilityLabel(showInspector ? "隐藏网络详情" : "显示网络详情")
+            .help(showInspector ? L10n.text("隐藏网络详情") : L10n.text("显示网络详情"))
+            .accessibilityLabel(showInspector ? L10n.text("隐藏网络详情") : L10n.text("显示网络详情"))
         }
         .controlSize(.large)
         .padding(.horizontal, 18)
@@ -141,25 +141,25 @@ struct Dashboard: View {
 
     private var sidebar: some View {
         VStack(alignment: .leading, spacing: 9) {
-            Text("频段").font(.caption.weight(.semibold)).foregroundStyle(.secondary).padding(.leading, 8)
-            bandRow(nil, title: "全部网络", icon: "point.3.connected.trianglepath.dotted")
+            Text(L10n.text("频段")).font(.caption.weight(.semibold)).foregroundStyle(.secondary).padding(.leading, 8)
+            bandRow(nil, title: L10n.text("全部网络"), icon: "point.3.connected.trianglepath.dotted")
             ForEach(Band.plotted) { band in
                 bandRow(band, title: band.rawValue, icon: "wave.3.right")
             }
             if workspace.networks.contains(where: { $0.band == .unknown }) {
-                bandRow(.unknown, title: "未知频段", icon: "questionmark.circle")
+                bandRow(.unknown, title: L10n.text("未知频段"), icon: "questionmark.circle")
             }
             Spacer()
 
-            Text("数据来源").font(.caption.weight(.semibold)).foregroundStyle(.secondary).padding(.leading, 8)
+            Text(L10n.text("数据来源")).font(.caption.weight(.semibold)).foregroundStyle(.secondary).padding(.leading, 8)
             HStack(spacing: 7) {
                 Circle().fill(workspace.source == .live ? Color.green : Color.orange)
                     .frame(width: 7, height: 7)
-                Text(workspace.source.rawValue).font(.subheadline.weight(.medium))
+                Text(workspace.source.title).font(.subheadline.weight(.medium))
             }
             .padding(.horizontal, 8)
             Button(action: workspace.requestLocation) {
-                Label("定位授权", systemImage: "location")
+                Label(L10n.text("定位授权"), systemImage: "location")
                     .frame(maxWidth: .infinity, alignment: .leading)
             }
             .buttonStyle(.borderless)
@@ -201,10 +201,10 @@ struct Dashboard: View {
     private func overview(_ rows: [Network]) -> some View {
         VStack(alignment: .leading, spacing: 11) {
             HStack {
-                Text("无线环境").font(.title3.weight(.semibold))
+                Text(L10n.text("无线环境")).font(.title3.weight(.semibold))
                 Spacer()
-                Picker("图表", selection: $plotMode) {
-                    ForEach(PlotMode.allCases) { Text($0.rawValue).tag($0) }
+                Picker(L10n.text("图表"), selection: $plotMode) {
+                    ForEach(PlotMode.allCases) { Text($0.title).tag($0) }
                 }
                 .pickerStyle(.segmented)
                 .labelsHidden()
@@ -220,15 +220,15 @@ struct Dashboard: View {
                         }
                     }
                     if activeBands.isEmpty {
-                        ContentUnavailableView("该频段无法绘制", systemImage: "chart.xyaxis.line")
+                        ContentUnavailableView(L10n.text("该频段无法绘制"), systemImage: "chart.xyaxis.line")
                             .frame(maxWidth: .infinity, maxHeight: .infinity)
                     }
                 }
                 .frame(height: 300)
                 HStack(spacing: 8) {
-                    Text("纵轴 RSSI (dBm) · 横轴信道")
+                    Text(L10n.text("纵轴 RSSI (dBm) · 横轴信道"))
                     Spacer()
-                    Text("虚线表示按主信道估算中心")
+                    Text(L10n.text("虚线表示按主信道估算中心"))
                 }
                 .font(.caption)
                 .foregroundStyle(.secondary)
@@ -252,46 +252,46 @@ struct Dashboard: View {
         let selectedCount = selectedIDs.count
         return VStack(alignment: .leading, spacing: 9) {
             HStack(spacing: 9) {
-                Text("接入点").font(.title3.weight(.semibold))
+                Text(L10n.text("接入点")).font(.title3.weight(.semibold))
                 Text("\(rows.count) / \(workspace.networks.count)")
                     .font(.caption.monospacedDigit()).foregroundStyle(.secondary)
                 Spacer()
                 Button {
                     showFilters.toggle()
                 } label: {
-                    Label("筛选", systemImage: hasFilters ? "line.3.horizontal.decrease.circle.fill" :
+                    Label(L10n.text("筛选"), systemImage: hasFilters ? "line.3.horizontal.decrease.circle.fill" :
                             "line.3.horizontal.decrease.circle")
                 }
                 .popover(isPresented: $showFilters) { filterPanel }
-                Button("对比所选 \(selectedCount > 0 ? "· \(selectedCount)" : "")", systemImage: "rectangle.split.2x1") {
+                Button(L10n.text("对比所选") + (selectedCount > 0 ? " · \(selectedCount)" : ""), systemImage: "rectangle.split.2x1") {
                     showComparison = true
                 }
                 .disabled(selectedCount < 2)
-                .help("按住 Command 键选择两个或更多网络")
-                Button("隐藏", systemImage: "eye.slash") {
+                .help(L10n.text("按住 Command 键选择两个或更多网络"))
+                Button(L10n.text("隐藏"), systemImage: "eye.slash") {
                     workspace.hiddenFromCharts.formUnion(selectedIDs)
                 }
                 .disabled(selectedIDs.isSubset(of: workspace.hiddenFromCharts))
-                .help("从图表隐藏所选接入点")
-                Button("显示", systemImage: "eye") {
+                .help(L10n.text("从图表隐藏所选接入点"))
+                Button(L10n.text("显示"), systemImage: "eye") {
                     workspace.hiddenFromCharts.subtract(selectedIDs)
                 }
                 .disabled(selectedIDs.isDisjoint(with: workspace.hiddenFromCharts))
-                .help("在图表中显示所选接入点")
+                .help(L10n.text("在图表中显示所选接入点"))
             }
             .padding(.horizontal, 14)
             .padding(.top, 12)
 
             if rows.isEmpty {
                 ContentUnavailableView(
-                    workspace.networks.isEmpty ? "暂无扫描结果" : "没有匹配的接入点",
+                    workspace.networks.isEmpty ? L10n.text("暂无扫描结果") : L10n.text("没有匹配的接入点"),
                     systemImage: workspace.networks.isEmpty ? "wifi" : "magnifyingglass",
-                    description: Text(workspace.networks.isEmpty ? "使用右上角的扫描按钮查找附近网络。" : "调整搜索词、频段或筛选条件。")
+                    description: Text(workspace.networks.isEmpty ? L10n.text("使用右上角的扫描按钮查找附近网络。") : L10n.text("调整搜索词、频段或筛选条件。"))
                 )
                 .frame(maxHeight: .infinity)
             } else {
                 Table(rows, selection: $workspace.selected, sortOrder: $sort) {
-                    TableColumn("网络 / SSID", value: \.name) { network in
+                    TableColumn(L10n.text("网络 / SSID"), value: \.name) { network in
                         networkCell(network) {
                             HStack(spacing: 7) {
                                 let hidden = workspace.hiddenFromCharts.contains(network.id)
@@ -299,7 +299,7 @@ struct Dashboard: View {
                                     .font(.system(size: hidden || network.connected ? 12 : 6))
                                     .foregroundStyle(workspace.ssidColors.color(for: network.ssid, scheme: scheme))
                                     .frame(width: 12)
-                                    .accessibilityLabel(hidden ? "图表已隐藏" : (network.connected ? "当前连接" : "可见"))
+                                    .accessibilityLabel(hidden ? L10n.text("图表已隐藏") : (network.connected ? L10n.text("当前连接") : L10n.text("可见")))
                                 Text(network.name)
                                     .fontWeight(network.connected ? .semibold : .regular)
                                     .lineLimit(1)
@@ -309,10 +309,10 @@ struct Dashboard: View {
                     TableColumn("BSSID") { network in
                         networkCell(network) { Text(network.bssid ?? "—").font(.caption.monospaced()) }
                     }.width(min: 115, ideal: 130)
-                    TableColumn("频段") { network in
-                        networkCell(network) { Text(network.band.rawValue).foregroundStyle(network.band.tint) }
+                    TableColumn(L10n.text("频段")) { network in
+                        networkCell(network) { Text(L10n.networkValue(network.band.rawValue)).foregroundStyle(network.band.tint) }
                     }.width(min: 52, ideal: 62)
-                    TableColumn("主信道", value: \.channelOrder) { network in
+                    TableColumn(L10n.text("主信道"), value: \.channelOrder) { network in
                         networkCell(network) { Text(number(network.channel)) }
                     }.width(min: 46, ideal: 52)
                     TableColumn("RSSI", value: \.rssiOrder) { network in
@@ -323,11 +323,11 @@ struct Dashboard: View {
                             }
                         }
                     }.width(min: 59, ideal: 75)
-                    TableColumn("带宽", value: \.widthOrder) { network in
+                    TableColumn(L10n.text("带宽"), value: \.widthOrder) { network in
                         networkCell(network) { Text(number(network.width, " MHz")) }
                     }.width(min: 52, ideal: 64)
-                    TableColumn("安全", value: \.security) { network in
-                        networkCell(network) { Text(network.security) }
+                    TableColumn(L10n.text("安全"), value: \.security) { network in
+                        networkCell(network) { Text(L10n.networkValue(network.security)) }
                     }.width(min: 85, ideal: 120)
                 }
                 .tableStyle(.inset(alternatesRowBackgrounds: true))
@@ -349,7 +349,7 @@ struct Dashboard: View {
             Image(systemName: "info.circle").foregroundStyle(.secondary)
             Text(message).font(.subheadline)
             Spacer()
-            Button("关闭", systemImage: "xmark") { workspace.message = nil }
+            Button(L10n.text("关闭"), systemImage: "xmark") { workspace.message = nil }
                 .labelStyle(.iconOnly).buttonStyle(.borderless)
         }
         .padding(9)
@@ -358,23 +358,23 @@ struct Dashboard: View {
 
     private var filterPanel: some View {
         VStack(alignment: .leading, spacing: 12) {
-            Text("筛选接入点").font(.headline)
+            Text(L10n.text("筛选接入点")).font(.headline)
             Grid(alignment: .leading, horizontalSpacing: 12, verticalSpacing: 9) {
                 GridRow {
-                    Text("安全类型")
-                    Picker("安全类型", selection: $security) {
-                        Text("全部").tag("")
+                    Text(L10n.text("安全类型"))
+                    Picker(L10n.text("安全类型"), selection: $security) {
+                        Text(L10n.text("全部")).tag("")
                         ForEach(Set(workspace.networks.map(\.security) + [security]).filter { !$0.isEmpty }.sorted(), id: \.self) {
-                            Text($0).tag($0)
+                            Text(L10n.networkValue($0)).tag($0)
                         }
                     }
                     .labelsHidden()
                     .frame(width: 154)
                 }
                 GridRow {
-                    Text("主信道")
-                    Picker("主信道", selection: $primaryChannel) {
-                        Text("全部").tag("")
+                    Text(L10n.text("主信道"))
+                    Picker(L10n.text("主信道"), selection: $primaryChannel) {
+                        Text(L10n.text("全部")).tag("")
                         let channels = workspace.networks.compactMap(\.channel).map(String.init) + [primaryChannel]
                         ForEach(Set(channels).filter { !$0.isEmpty }.sorted { $0.localizedStandardCompare($1) == .orderedAscending }, id: \.self) {
                             Text($0).tag($0)
@@ -384,16 +384,16 @@ struct Dashboard: View {
                     .frame(width: 154)
                 }
                 GridRow {
-                    Text("最低 RSSI")
+                    Text(L10n.text("最低 RSSI"))
                     Stepper(value: $minRSSI, in: -100 ... -20, step: 5) {
-                        Text(minRSSI == -100 ? "不限" : "\(minRSSI) dBm")
+                        Text(minRSSI == -100 ? L10n.text("不限") : "\(minRSSI) dBm")
                             .monospacedDigit()
                     }
-                    .accessibilityLabel("最低 RSSI")
+                    .accessibilityLabel(L10n.text("最低 RSSI"))
                     .frame(width: 154)
                 }
             }
-            Button("清除筛选") {
+            Button(L10n.text("清除筛选")) {
                 security = ""
                 primaryChannel = ""
                 minRSSI = -100
@@ -407,15 +407,15 @@ struct Dashboard: View {
         HStack(spacing: 9) {
             if workspace.busy {
                 ProgressView().controlSize(.small)
-                Text("正在扫描…")
+                Text(L10n.text("正在扫描…"))
             } else {
                 Image(systemName: workspace.source == .live ? "wifi" : "circle.dotted")
-                Text(workspace.continuous ? "连续扫描中" : workspace.source.rawValue)
+                Text(workspace.continuous ? L10n.text("连续扫描中") : workspace.source.title)
             }
             if let interface = workspace.interfaceName { Text("· \(interface)") }
             Spacer()
             if workspace.source == .live, let time = workspace.lastScan {
-                Text("最近扫描 \(time.formatted(date: .omitted, time: .standard))")
+                Text(L10n.format("最近扫描 %@", time.formatted(.dateTime.hour().minute().second().locale(L10n.locale))))
             }
         }
         .font(.caption)

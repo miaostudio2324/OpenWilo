@@ -87,7 +87,7 @@ public struct Network: Codable, Identifiable, Equatable, Sendable {
         self.note = note
     }
 
-    public var name: String { ssid.flatMap { $0.isEmpty ? nil : $0 } ?? "隐藏或未提供的网络" }
+    public var name: String { ssid.flatMap { $0.isEmpty ? nil : $0 } ?? L10n.text("隐藏或未提供的网络") }
     public var latest: Observation? { samples.last }
     public var rssiOrder: Int { latest?.rssi ?? -999 }
     public var snrOrder: Int { latest?.snr ?? -999 }
@@ -132,7 +132,7 @@ public struct WiFiElement: Identifiable, Sendable {
         case (255, 106): return "EHT Operation"
         case (255, 107): return "Multi-Link"
         case (255, 108): return "EHT Capabilities"
-        default: return "信息元素"
+        default: return L10n.text("信息元素")
         }
     }
 

@@ -34,6 +34,8 @@ extension Band {
 enum PlotMode: String, CaseIterable, Identifiable {
     case channels = "信道分布"
     case history = "信号趋势"
+
+    var title: String { L10n.text(rawValue) }
     var id: Self { self }
 }
 
@@ -124,7 +126,7 @@ struct ChannelPlot: View {
                     Circle().fill(band.tint).frame(width: 7, height: 7)
                     Text(band.rawValue).font(.subheadline.weight(.semibold))
                     Spacer(minLength: 4)
-                    Text(hovered.map { "\($0.title) · \($0.signal) dBm" } ?? "\(curves.count) 条曲线")
+                    Text(hovered.map { "\($0.title) · \($0.signal) dBm" } ?? L10n.format("%ld 条曲线", curves.count))
                         .font(.caption)
                         .foregroundStyle(.secondary)
                         .lineLimit(1)
@@ -147,7 +149,7 @@ struct ChannelPlot: View {
 
                     axisLabels(plot, axis: axis)
                     if curves.isEmpty {
-                        Text("无可绘制网络").font(.caption).foregroundStyle(.secondary)
+                        Text(L10n.text("无可绘制网络")).font(.caption).foregroundStyle(.secondary)
                             .frame(maxWidth: .infinity, maxHeight: .infinity)
                     }
 
@@ -184,7 +186,7 @@ struct ChannelPlot: View {
                     }
                 }
                 .accessibilityElement(children: .contain)
-                .accessibilityLabel("\(band.rawValue) 信道图，\(curves.count) 条网络曲线")
+                .accessibilityLabel(L10n.format("%@ 信道图，%ld 条网络曲线", band.rawValue, curves.count))
             }
         }
         .padding(12)
@@ -193,7 +195,7 @@ struct ChannelPlot: View {
 
     private func makeCurves(_ measurements: [(Network, ChannelSpan, Int)], in plot: CGRect, axis: RSSIAxis) -> [Curve] {
         measurements.map { row, span, signal in
-            let title = row.ssid?.isEmpty == false ? row.name : "隐藏 SSID"
+            let title = row.ssid?.isEmpty == false ? row.name : L10n.text("隐藏 SSID")
             let peak = CGPoint(x: x(span.center, in: plot), y: y(signal, in: plot, axis: axis))
             return Curve(id: row.id, title: title, signal: signal,
                          color: colors.color(for: row.ssid, scheme: scheme), estimated: span.estimated,
@@ -326,7 +328,7 @@ struct SignalPlot: View {
     var body: some View {
         let rows = displayed
         if rows.isEmpty {
-            ContentUnavailableView("暂无信号记录", systemImage: "waveform.path")
+            ContentUnavailableView(L10n.text("暂无信号记录"), systemImage: "waveform.path")
         } else {
             let minimum = min(-100, rows.flatMap(\.samples).compactMap(\.rssi).min() ?? -100)
             Chart(rows) { network in
@@ -334,12 +336,12 @@ struct SignalPlot: View {
                 ForEach(Array(network.samples.enumerated()), id: \.offset) { entry in
                     if let rssi = entry.element.rssi {
                         if network.samples.count == 1 {
-                            PointMark(x: .value("时间", entry.element.time), y: .value("RSSI", rssi))
-                                .foregroundStyle(by: .value("网络", label))
+                            PointMark(x: .value(L10n.text("时间"), entry.element.time), y: .value("RSSI", rssi))
+                                .foregroundStyle(by: .value(L10n.text("网络"), label))
                         } else {
-                            LineMark(x: .value("时间", entry.element.time), y: .value("RSSI", rssi),
-                                     series: .value("网络标识", network.id))
-                                .foregroundStyle(by: .value("网络", label))
+                            LineMark(x: .value(L10n.text("时间"), entry.element.time), y: .value("RSSI", rssi),
+                                     series: .value(L10n.text("网络标识"), network.id))
+                                .foregroundStyle(by: .value(L10n.text("网络"), label))
                                 .symbol(Circle().strokeBorder(lineWidth: 1))
                                 .symbolSize(12)
                         }

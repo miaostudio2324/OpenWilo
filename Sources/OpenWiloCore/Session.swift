@@ -39,10 +39,11 @@ public struct ScanSession: Codable, Sendable {
         let header = "SSID,BSSID,Band,Primary Channel,Width (MHz),RSSI (dBm),Noise (dBm),SNR (dB),PHY,Security,Country,Last Seen (UTC),Note"
         let rows = networks.map { network in
             let fields: [String] = [
-                escaped(network.ssid ?? ""), escaped(network.bssid ?? ""), escaped(network.band.rawValue),
+                escaped(network.ssid ?? ""), escaped(network.bssid ?? ""), escaped(L10n.networkValue(network.band.rawValue)),
                 network.channel.map(String.init) ?? "", network.width.map(String.init) ?? "",
                 network.latest?.rssi.map(String.init) ?? "", network.latest?.noise.map(String.init) ?? "",
-                network.latest?.snr.map(String.init) ?? "", escaped(network.phy), escaped(network.security),
+                network.latest?.snr.map(String.init) ?? "", escaped(L10n.networkValue(network.phy)),
+                escaped(L10n.networkValue(network.security)),
                 escaped(network.country ?? ""), escaped(network.latest.map { timestamp.string(from: $0.time) } ?? ""),
                 escaped(network.note)
             ]
@@ -65,9 +66,9 @@ private enum SessionError: LocalizedError {
 
     var errorDescription: String? {
         switch self {
-        case .tooLarge: return "请选择不超过 32 MB 的本地会话文件。"
-        case .version: return "此版本的 OpenWilo 无法读取该会话格式。"
-        case .invalid: return "会话中存在重复网络标识或无效的采样记录。"
+        case .tooLarge: return L10n.text("请选择不超过 32 MB 的本地会话文件。")
+        case .version: return L10n.text("此版本的 OpenWilo 无法读取该会话格式。")
+        case .invalid: return L10n.text("会话中存在重复网络标识或无效的采样记录。")
         }
     }
 }
