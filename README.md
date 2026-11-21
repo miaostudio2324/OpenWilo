@@ -6,6 +6,14 @@ English · [简体中文](README.zh-CN.md)
 
 OpenWilo scans nearby Wi-Fi access points and shows where their channels overlap. Use it to see which networks share spectrum, track signal changes, and inspect the details of your Mac’s current Wi-Fi connection.
 
+## Screenshots
+
+Example views with fictional Wi-Fi networks.
+
+![Tri-band channel charts and access point details](docs/screenshots/channels.png)
+
+![RSSI history for three selected access points](docs/screenshots/signal-history.png)
+
 ## Features
 
 - **Channel charts** for 2.4, 5, and 6 GHz, with adaptive RSSI axes, labels, and consistent colors per SSID. The overview shows the 6 GHz chart when matching results are available.
@@ -16,7 +24,7 @@ OpenWilo scans nearby Wi-Fi access points and shows where their channels overlap
 
 ## Download and use
 
-Download the ZIP for **macOS 14 or later on Apple silicon** from [GitHub Releases](https://github.com/miaostudio2324/OpenWilo/releases/latest). Extract it and open `OpenWilo.app`. The distributed build is ad hoc signed and has no Apple notarization.
+Choose the Apple silicon (arm64) or Intel (amd64 / x86_64) ZIP from [GitHub Releases](https://github.com/miaostudio2324/OpenWilo/releases/latest). Both builds require **macOS 14 or later**. Extract it and open `OpenWilo.app`. The distributed build is ad hoc signed and has no Apple notarization.
 
 Click **定位授权** (Location Permission) to let macOS reveal network names and BSSIDs. A successful authorization starts scanning automatically. Click **扫描** (Scan) to start, or **停止扫描** (Stop Scan) to stop. The 1.0.0 application interface is in Simplified Chinese.
 
@@ -35,7 +43,13 @@ swift test
 ./scripts/build-app.sh
 ```
 
-The script builds `dist/OpenWilo.app` for the active toolchain architecture. OpenWilo uses SwiftUI, Swift Charts, and CoreWLAN, with no third-party package dependencies.
+The script builds `dist/OpenWilo.app` for the host architecture. To cross-compile the Intel build on macOS, run:
+
+```sh
+./scripts/build-app.sh release "$PWD/dist/intel/OpenWilo.app" x86_64
+```
+
+OpenWilo uses SwiftUI, Swift Charts, and CoreWLAN, with no third-party package dependencies.
 
 ## License
 

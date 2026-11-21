@@ -6,6 +6,14 @@
 
 OpenWilo 扫描附近的 Wi-Fi 接入点，用信道图呈现频段重叠情况。你可以观察哪些网络共用频谱、追踪信号变化，并检查 Mac 当前的 Wi-Fi 连接。
 
+## 界面示例
+
+以下截图使用虚构的 Wi-Fi 网络数据。
+
+![三频信道图与接入点详情](docs/screenshots/channels.png)
+
+![三个所选接入点的 RSSI 历史曲线](docs/screenshots/signal-history.png)
+
 ## 主要功能
 
 - **2.4、5、6 GHz 信道图**。纵轴按 RSSI 自适应，曲线带 SSID 标签，同名网络使用同一种颜色。有匹配结果时，首页会显示 6 GHz 图。
@@ -16,7 +24,7 @@ OpenWilo 扫描附近的 Wi-Fi 接入点，用信道图呈现频段重叠情况�
 
 ## 下载与使用
 
-从 [GitHub Releases](https://github.com/miaostudio2324/OpenWilo/releases/latest) 下载适用于 **macOS 14 或更高版本的 Apple 芯片 Mac** 的 ZIP。解压后打开 `OpenWilo.app`。发布包使用 ad hoc 签名，未经过 Apple 公证。
+从 [GitHub Releases](https://github.com/miaostudio2324/OpenWilo/releases/latest) 下载适合你 Mac 的 ZIP。Apple 芯片版为 arm64，Intel 版为 amd64（x86_64），均需要 **macOS 14 或更高版本**。解压后打开 `OpenWilo.app`。发布包使用 ad hoc 签名，未经过 Apple 公证。
 
 点击「定位授权」以获取网络名称和 BSSID。授权完成后会自动开始扫描。右上角的「扫描」和「停止扫描」可手动控制启停。
 
@@ -35,7 +43,13 @@ swift test
 ./scripts/build-app.sh
 ```
 
-构建产物位于 `dist/OpenWilo.app`，架构跟随当前工具链。项目使用 SwiftUI、Swift Charts 和 CoreWLAN，无第三方 Swift 包依赖。
+默认构建当前 Mac 架构，产物位于 `dist/OpenWilo.app`。在 macOS 上交叉编译 Intel 版可运行：
+
+```sh
+./scripts/build-app.sh release "$PWD/dist/intel/OpenWilo.app" x86_64
+```
+
+项目使用 SwiftUI、Swift Charts 和 CoreWLAN，无第三方 Swift 包依赖。
 
 ## 许可证
 
