@@ -8,9 +8,11 @@ OpenWilo 扫描附近的 Wi-Fi 接入点，用信道图呈现频段重叠情况�
 
 ## 界面示例
 
-以下截图使用虚构的 Wi-Fi 网络数据。
+以下截图使用同一套虚构扫描数据，共 29 个接入点，其中 14 个分布在 2.4 GHz。
 
 ![三频信道图与接入点详情](docs/screenshots/channels.png)
+
+![2.4 GHz 单频段信道图与接入点重叠情况](docs/screenshots/channels-2.4ghz.png)
 
 ![三个所选接入点的 RSSI 历史曲线](docs/screenshots/signal-history.png)
 

@@ -8,9 +8,11 @@ OpenWilo scans nearby Wi-Fi access points and shows where their channels overlap
 
 ## Screenshots
 
-Example views with fictional Wi-Fi networks.
+Example views from a fictional scan with 29 access points, including 14 on 2.4 GHz.
 
 ![Tri-band channel charts and access point details](docs/screenshots/channels.png)
+
+![Full-width 2.4 GHz chart showing overlapping access points](docs/screenshots/channels-2.4ghz.png)
 
 ![RSSI history for three selected access points](docs/screenshots/signal-history.png)
 
